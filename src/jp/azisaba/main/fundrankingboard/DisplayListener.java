@@ -143,12 +143,8 @@ public class DisplayListener implements Listener {
 						break;
 					}
 
-					//					comp.append(new HoloComponent(
-					//							prefix + ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
-					//									+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
-					//									+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 					comp.append(new HoloComponent(
-							prefix + ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
+							prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
 									+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue())));
 
 					if (data.getKey().equals(p.getName())) {
