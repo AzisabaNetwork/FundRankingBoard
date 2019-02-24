@@ -119,6 +119,11 @@ public class DisplayListener implements Listener {
 					before = data.getValue();
 					count++;
 
+					String prefix = "";
+					if (data.getKey().equals(p.getName())) {
+						prefix = ChatColor.BLUE + "YOU » ";
+					}
+
 					if (count > 5) {
 
 						if (includeTarget) {
@@ -131,14 +136,14 @@ public class DisplayListener implements Listener {
 
 						comp.append(new HoloComponent(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 30)));
 						comp.append(new HoloComponent(
-								ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
+								prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
 										+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
 										+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 						break;
 					}
 
 					comp.append(new HoloComponent(
-							ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
+							prefix + ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
 									+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
 									+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 
