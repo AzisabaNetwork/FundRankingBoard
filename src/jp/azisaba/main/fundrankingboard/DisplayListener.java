@@ -1,8 +1,10 @@
 package jp.azisaba.main.fundrankingboard;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -137,15 +139,17 @@ public class DisplayListener implements Listener {
 						comp.append(new HoloComponent(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 30)));
 						comp.append(new HoloComponent(
 								prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
-										+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
-										+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
+										+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue())));
 						break;
 					}
 
+					//					comp.append(new HoloComponent(
+					//							prefix + ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
+					//									+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
+					//									+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 					comp.append(new HoloComponent(
 							prefix + ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
-									+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
-									+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
+									+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue())));
 
 					if (data.getKey().equals(p.getName())) {
 						includeTarget = true;
@@ -170,5 +174,47 @@ public class DisplayListener implements Listener {
 		for (Player p : results.keySet()) {
 			results.get(p).delete();
 		}
+	}
+
+	Map<Integer, String> digits = new HashMap<Integer, String>() {
+		{
+			put(0, "");
+			put(1, "万");
+			put(2, "億");
+			put(3, "兆");
+			put(4, "京");
+			put(5, "垓");
+		}
+	};
+
+	private String format(BigDecimal value) {
+		String str = "";
+		value = value.setScale(1, RoundingMode.HALF_DOWN);
+
+		if (!value.toString().endsWith(".0")) {
+			str = value.toString().substring(value.toString().length() - 2, value.toString().length());
+			value = value.setScale(0, RoundingMode.HALF_DOWN);
+		}
+
+		String numStr = value.toString().replace(".0", "");
+
+		int attempt = 0;
+		while (numStr.length() > 4) {
+
+			if (attempt > 5) {
+				return value.toString();
+			}
+
+			str = numStr.substring(numStr.length() - 4, numStr.length()) + digits.get(attempt) + str;
+			numStr = numStr.substring(0, numStr.length() - 4);
+
+			attempt++;
+		}
+
+		if (numStr.length() != 0) {
+			str = numStr + digits.get(attempt) + str;
+		}
+
+		return str;
 	}
 }
