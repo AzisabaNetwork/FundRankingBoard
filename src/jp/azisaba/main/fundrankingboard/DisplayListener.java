@@ -22,7 +22,7 @@ import jp.azisaba.main.fundrankingboard.armorstand.HoloAPI;
 import jp.azisaba.main.fundrankingboard.armorstand.HoloComponent;
 import jp.azisaba.main.homogui.utils.RankingFetcher;
 
-public class DispalyListener implements Listener {
+public class DisplayListener implements Listener {
 
 	private HashMap<Player, DisplayResult> results = new HashMap<>();
 
@@ -91,7 +91,7 @@ public class DispalyListener implements Listener {
 		}
 	}
 
-	private void display(Player p, Location loc) {
+	public void display(Player p, Location loc) {
 		if (results.containsKey(p)) {
 			results.get(p).delete();
 		}
@@ -129,18 +129,18 @@ public class DispalyListener implements Listener {
 							continue;
 						}
 
-						comp.append(new HoloComponent(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 16)));
+						comp.append(new HoloComponent(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 30)));
 						comp.append(new HoloComponent(
-								ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
+								ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
 										+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
-										+ data.getValue().setScale(BigDecimal.ROUND_HALF_DOWN, 1).toString()));
+										+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 						break;
 					}
 
 					comp.append(new HoloComponent(
 							ChatColor.YELLOW + "" + currentRank + ", " + ChatColor.AQUA + data.getKey()
 									+ ChatColor.GREEN + ": " + ChatColor.GOLD + ""
-									+ data.getValue().setScale(BigDecimal.ROUND_HALF_DOWN, 1).toString()));
+									+ data.getValue().setScale(BigDecimal.ROUND_DOWN, 1).toString()));
 
 					if (data.getKey().equals(p.getName())) {
 						includeTarget = true;
@@ -148,7 +148,7 @@ public class DispalyListener implements Listener {
 				}
 
 				result.delete();
-				DisplayResult r = HoloAPI.displayHolographic(p, loc, comp);
+				DisplayResult r = HoloAPI.displayHolographic(p, point, comp);
 				results.put(p, r);
 			}
 		}.start();
@@ -158,6 +158,12 @@ public class DispalyListener implements Listener {
 		if (results.containsKey(p)) {
 			results.get(p).delete();
 			results.remove(p);
+		}
+	}
+
+	public void clearAll() {
+		for (Player p : results.keySet()) {
+			results.get(p).delete();
 		}
 	}
 }

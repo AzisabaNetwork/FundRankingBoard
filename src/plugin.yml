@@ -3,3 +3,4 @@ main: jp.azisaba.main.fundrankingboard.FundRankingBoard
 version: 1.0.0
 author: siloneco
 description: "Generate ranking board of funds."
+depend: [Homos, HomoGUI]
