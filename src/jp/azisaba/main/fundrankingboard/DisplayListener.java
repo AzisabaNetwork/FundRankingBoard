@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import jp.azisaba.main.fundrankingboard.armorstand.DisplayResult;
 import jp.azisaba.main.fundrankingboard.armorstand.HoloAPI;
@@ -30,6 +31,31 @@ public class DisplayListener implements Listener {
 
 	@EventHandler
 	public void onMoveClose(PlayerMoveEvent e) {
+
+		Player p = e.getPlayer();
+
+		Location from = e.getFrom();
+		Location to = e.getTo();
+		Location point = FundRankingBoard.getPluginConfig().displayLocation;
+
+		if (point == null) {
+			return;
+		}
+
+		if (point.getWorld() != from.getWorld() || point.getWorld() != to.getWorld()
+				|| from.getWorld() != to.getWorld()) {
+			return;
+		}
+
+		if (from.distance(point) > 32 && to.distance(point) <= 32) {
+			display(p, point);
+		} else if (from.distance(point) <= 32 && to.distance(point) > 32) {
+			clear(p);
+		}
+	}
+
+	@EventHandler
+	public void onTeleportToClose(PlayerTeleportEvent e) {
 
 		Player p = e.getPlayer();
 
@@ -201,7 +227,15 @@ public class DisplayListener implements Listener {
 				return value.toString();
 			}
 
-			str = numStr.substring(numStr.length() - 4, numStr.length()) + digits.get(attempt) + str;
+			String sec = numStr.substring(numStr.length() - 4, numStr.length());
+
+			while (sec.startsWith("0")) {
+				sec = sec.substring(1);
+			}
+
+			if (sec.length() > 0) {
+				str = sec + digits.get(attempt) + str;
+			}
 			numStr = numStr.substring(0, numStr.length() - 4);
 
 			attempt++;
