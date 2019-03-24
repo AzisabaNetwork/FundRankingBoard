@@ -20,14 +20,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import jp.azisaba.main.fundrankingboard.armorstand.DisplayResult;
-import jp.azisaba.main.fundrankingboard.armorstand.HoloAPI;
-import jp.azisaba.main.fundrankingboard.armorstand.HoloComponent;
 import jp.azisaba.main.homogui.utils.RankingFetcher;
 
 public class DisplayListener implements Listener {
 
-	private HashMap<Player, DisplayResult> results = new HashMap<>();
+	private HashMap<Player, Hologram> results = new HashMap<>();
 
 	@EventHandler
 	public void onMoveClose(PlayerMoveEvent e) {
@@ -121,15 +118,15 @@ public class DisplayListener implements Listener {
 
 	public void display(Player p, Location loc) {
 		if (results.containsKey(p)) {
-			results.get(p).delete();
+			results.get(p).removeAll();
 		}
 
 		Location point = loc.clone();
 
-		HoloComponent fetching = new HoloComponent(ChatColor.RED + "集計中...");
-		DisplayResult result = HoloAPI.displayHolographic(p, point.clone().add(0, 2, 0), fetching);
+		Hologram holo = Hologram.create(ChatColor.RED + "集計中...", point.clone().add(0, 1, 0));
+		holo.display(p);
 
-		HoloComponent comp = new HoloComponent(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "総資金ランキング");
+		holo.setLine(0, ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "総資金ランキング");
 
 		new Thread() {
 			public void run() {
@@ -162,39 +159,36 @@ public class DisplayListener implements Listener {
 							continue;
 						}
 
-						comp.append(new HoloComponent(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 30)));
-						comp.append(new HoloComponent(
+						holo.addLine(ChatColor.LIGHT_PURPLE + StringUtils.repeat("=", 30));
+						holo.addLine(
 								prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
-										+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue())));
+										+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue()));
 						break;
 					}
-
-					comp.append(new HoloComponent(
-							prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
-									+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue())));
+					holo.addLine(prefix + ChatColor.YELLOW + "" + currentRank + "位 " + ChatColor.AQUA + data.getKey()
+							+ ChatColor.GREEN + ": " + ChatColor.GOLD + "" + format(data.getValue()));
 
 					if (data.getKey().equals(p.getName())) {
 						includeTarget = true;
 					}
 				}
 
-				result.delete();
-				DisplayResult r = HoloAPI.displayHolographic(p, point, comp);
-				results.put(p, r);
+				holo.update(p);
+				results.put(p, holo);
 			}
 		}.start();
 	}
 
 	private void clear(Player p) {
 		if (results.containsKey(p)) {
-			results.get(p).delete();
+			results.get(p).removeAll();
 			results.remove(p);
 		}
 	}
 
 	public void clearAll() {
 		for (Player p : results.keySet()) {
-			results.get(p).delete();
+			results.get(p).removeAll();
 		}
 	}
 
