@@ -1,6 +1,6 @@
-name: FundRankingBoard
+name: ${project.name}
 main: jp.azisaba.main.fundrankingboard.FundRankingBoard
-version: 1.0.3
+version: ${project.version}
 author: siloneco
-description: "Generate ranking board of funds."
+description: ${project.description}
 depend: [HomoSystem, HomoGUI]
